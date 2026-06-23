@@ -1,0 +1,16 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+ffmpeg.exe
+cloudflared.exe
+gh.exe
+tunnel.yml
+tunnel_url.txt
+api_key.txt
+C:/Users/
+*.mp4
+*.m4a
+*.webm
+*.tmp
+.env

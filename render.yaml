@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: mediasaver
+    runtime: docker
+    envVars:
+      - key: API_KEY
+        value: 0681e5ce3a8109e561148eb24542f62172be3a159dc07066
+      - key: SAVE_DIR
+        value: /tmp/mediavault
+      - key: RENDER_URL
+        value: https://mediasaver.onrender.com

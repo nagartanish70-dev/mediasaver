@@ -1,0 +1,128 @@
+{
+  "_comment": "This file describes every action in the iOS Shortcut in order.",
+  "_shortcut_name": "MediaVault — Save to Gallery",
+  "_version": "1.0",
+
+  "actions": [
+    {
+      "step": 1,
+      "action": "Receive input from Share Sheet",
+      "settings": {
+        "Input types": ["URLs", "Text"],
+        "If there is no input": "Ask for URL"
+      },
+      "variable": "ShortcutInput"
+    },
+    {
+      "step": 2,
+      "action": "Text",
+      "value": "YOUR_PC_IP_HERE",
+      "_note": "Replace with your PC's local IP, e.g. 192.168.1.10",
+      "variable": "PC_IP"
+    },
+    {
+      "step": 3,
+      "action": "Text",
+      "value": "8765",
+      "variable": "PORT"
+    },
+    {
+      "step": 4,
+      "action": "Text",
+      "value": "YOUR_API_KEY_HERE",
+      "_note": "Paste the API key printed by the server on first run",
+      "variable": "API_KEY"
+    },
+    {
+      "step": 5,
+      "action": "URL",
+      "value": "http://{PC_IP}:{PORT}/download",
+      "variable": "SERVER_URL"
+    },
+    {
+      "step": 6,
+      "action": "Get Contents of URL",
+      "settings": {
+        "URL": "{SERVER_URL}",
+        "Method": "POST",
+        "Headers": {
+          "Content-Type": "application/json",
+          "X-API-Key": "{API_KEY}"
+        },
+        "Request Body": "JSON",
+        "JSON fields": [
+          { "key": "url", "value": "{ShortcutInput}" }
+        ]
+      },
+      "variable": "ServerResponse"
+    },
+    {
+      "step": 7,
+      "action": "Get Dictionary Value",
+      "key": "status",
+      "from": "{ServerResponse}",
+      "variable": "DownloadStatus"
+    },
+    {
+      "step": 8,
+      "action": "If",
+      "condition": "{DownloadStatus} is not 'success'",
+      "then": [
+        {
+          "action": "Get Dictionary Value",
+          "key": "error",
+          "from": "{ServerResponse}",
+          "variable": "ErrorMessage"
+        },
+        {
+          "action": "Show Alert",
+          "title": "Download Failed",
+          "message": "{ErrorMessage}",
+          "cancel_button": "OK"
+        },
+        { "action": "Exit Shortcut" }
+      ]
+    },
+    {
+      "step": 9,
+      "action": "Get Dictionary Value",
+      "key": "file_path",
+      "from": "{ServerResponse}",
+      "variable": "FilePath"
+    },
+    {
+      "step": 10,
+      "action": "URL",
+      "value": "http://{PC_IP}:{PORT}{FilePath}?api_key={API_KEY}",
+      "variable": "FileURL"
+    },
+    {
+      "step": 11,
+      "action": "Get Contents of URL",
+      "settings": {
+        "URL": "{FileURL}",
+        "Method": "GET"
+      },
+      "variable": "VideoData"
+    },
+    {
+      "step": 12,
+      "action": "Save to Photo Album",
+      "input": "{VideoData}",
+      "album": "MediaVault"
+    },
+    {
+      "step": 13,
+      "action": "Get Dictionary Value",
+      "key": "title",
+      "from": "{ServerResponse}",
+      "variable": "VideoTitle"
+    },
+    {
+      "step": 14,
+      "action": "Show Notification",
+      "title": "Saved to Gallery",
+      "body": "{VideoTitle}"
+    }
+  ]
+}
